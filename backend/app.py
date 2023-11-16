@@ -4,8 +4,8 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-import requests
-import pandas as pd
+#import requests
+#import pandas as pd
 
 ### Set up the databases ###
 
@@ -13,7 +13,7 @@ class DbConfig(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///sitemgmt.db'
     SQLALCHEMY_BINDS = {
         'sitemgmt_db': SQLALCHEMY_DATABASE_URI,  # default bind
-        'malaria_db': 'sqlite:///malaria.db',
+        #'malaria_db': 'sqlite:///malaria.db',
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -52,7 +52,7 @@ class Action(db.Model):
 
     admin = db.relationship('Admin', back_populates='actions')
     feedback = db.relationship('Feedback', back_populates='actions')
-
+'''
 class Malaria(db.Model):
     __bind_key__ = 'malaria_db'
     index = db.Column(db.Integer, primary_key=True)
@@ -174,13 +174,13 @@ def import_country_data():
     
     except requests.RequestException as e:
         return jsonify({'error': f'Error making API request: {str(e)}'})
-
+'''
 # NOTE: This route is needed for the default EB health check route
 @app.route('/')  
 def home():
     return "Ok"
 
-### Reset databases ###
+### Reset database ###
 
 @app.route('/api/reset/sitemgmt/', methods=['PUT'])
 def reset_sitemgmt_db():
@@ -193,7 +193,7 @@ def reset_sitemgmt_db():
         return "Successfully reset the sitemgmt database"
     else:
         return "Error resetting the sitemgmt database", 501
-
+'''
 @app.route('/api/reset/malaria/', methods=['PUT'])
 def reset_malaria_db():
     engine = db.get_engine(app, bind='malaria_db')
@@ -343,7 +343,7 @@ def get_all_malaria_iso():
     iso_list = [iso[0] for iso in iso_list]
 
     return jsonify(iso_list)
-
+'''
 ### Admin resource ###
 
 @app.route('/api/admin/', methods=['GET'])
@@ -630,7 +630,7 @@ def delete_action(action_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        import_malaria_csv()
-        import_country_data()
+        #import_malaria_csv()
+        #import_country_data()
 
     app.run(debug=True, port=8080)
