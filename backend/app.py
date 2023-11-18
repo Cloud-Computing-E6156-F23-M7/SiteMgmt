@@ -174,7 +174,7 @@ def update_admin(admin_id):
         else:
             new_email = new_email.lower()
 
-        if Admin.query.filter(func.lower(Admin.email) == email).first():
+        if Admin.query.filter(func.lower(Admin.email) == new_email).first():
             return "Email already exists", 400
 
         admin.email = new_email
