@@ -3,7 +3,6 @@ import axios from 'axios';
 
 const AdminComponent = () => {
     const [admins, setAdmins] = useState([]);
-    const [filteredAdmins] = useState([]);  // New state for filtered results
     const [allAdmins, setAllAdmins] = useState([]);  // To store all admins
     const [newAdminEmail, setNewAdminEmail] = useState('');
     const [updateEmails, setUpdateEmails] = useState({});
