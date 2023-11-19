@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
+
 ### Set up the databases ###
 
 class DbConfig(object):
@@ -14,17 +15,19 @@ class DbConfig(object):
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+
 app = Flask(__name__)
 app.config.from_object(DbConfig)
 app.json.sort_keys = False
 db = SQLAlchemy(app)
 CORS(app)
 
+
 class Admin(db.Model):
     __bind_key__ = 'sitemgmt_db'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    isDeleted = db.Column(db.Integer, default=False, nullable=False)    # soft deletion only
+    isDeleted = db.Column(db.Integer, default=False, nullable=False)  # soft deletion only
 
     actions = db.relationship('Action', back_populates='admin')
 
@@ -35,6 +38,7 @@ class Admin(db.Model):
             'isDeleted': self.isDeleted
         }
 
+
 class Feedback(db.Model):
     __bind_key__ = 'sitemgmt_db'
     id = db.Column(db.Integer, primary_key=True)
@@ -42,12 +46,12 @@ class Feedback(db.Model):
     email = db.Column(db.String(100))
     text = db.Column(db.Text, nullable=False)
     submission_date = db.Column(db.DateTime(timezone=True), default=func.now())
-    isDeleted = db.Column(db.Integer, default=False, nullable=False)    # soft deletion only
+    isDeleted = db.Column(db.Integer, default=False, nullable=False)  # soft deletion only
 
     actions = db.relationship('Action', back_populates='feedback')
 
     def serialize(self):
-        return{
+        return {
             'feedback_id': self.id,
             'name': self.name,
             'email': self.email,
@@ -55,6 +59,7 @@ class Feedback(db.Model):
             'submission_date': self.submission_date,
             'isDeleted': self.isDeleted
         }
+
 
 class Action(db.Model):
     __bind_key__ = 'sitemgmt_db'
@@ -68,20 +73,21 @@ class Action(db.Model):
     feedback = db.relationship('Feedback', back_populates='actions')
 
     def serialize(self):
-        return{
+        return {
             'action_id': self.id,
             'admin_id': self.admin_id,
             'feedback_id': self.feedback_id,
             'comment': self.comment,
             'action_date': self.action_date
-        }    
+        }
 
-# NOTE: This route is needed for the default EB health check route
-@app.route('/')  
-def home():
-    return "Ok"
+    # NOTE: This route is needed for the default EB health check route
+    @app.route('/')
+    def home(self):
+        return "Ok"
 
-### Reset database ###
+    ### Reset database ###
+
 
 @app.route('/api/reset/sitemgmt/', methods=['PUT'])
 def reset_sitemgmt_db():
@@ -95,6 +101,7 @@ def reset_sitemgmt_db():
     else:
         return "Error resetting the sitemgmt database", 501
 
+
 ### Admin resource ###
 
 @app.route('/api/admin/', methods=['GET'])
@@ -102,21 +109,23 @@ def get_all_admin():
     admin_list = Admin.query.all()
     return jsonify([admin.serialize() for admin in admin_list])
 
+
 @app.route('/api/admin/<int:admin_id>/', methods=['GET'])
 def get_admin(admin_id):
     admin = Admin.query.get(admin_id)
 
     if not admin:
         return "Admin not found", 404
-    if admin.isDeleted == True:
+    if admin.isDeleted:
         return "Admin not activated", 400
-    
+
     return jsonify(admin.serialize())
+
 
 @app.route('/api/admin/', methods=['POST'])
 def add_admin():
     email = request.json.get('email')
-    
+
     if email is None:
         return "Email cannot be null", 400
 
@@ -126,19 +135,20 @@ def add_admin():
         email = email.lower()
 
     admin = Admin.query.filter(func.lower(Admin.email) == email).first()
-    
+
     if not admin:
         new_admin = Admin(email=email)
         db.session.add(new_admin)
         db.session.commit()
         return "Successfully added an admin", 201
     else:
-        if admin.isDeleted == True:
+        if admin.isDeleted:
             admin.isDeleted = False
             db.session.commit()
             return "Successfully reactivated a deleted admin"
         else:
             return "admin already exists and is activated", 400
+
 
 @app.route('/api/admin/<int:admin_id>/', methods=['DELETE'])
 def delete_admin(admin_id):
@@ -155,6 +165,7 @@ def delete_admin(admin_id):
     else:
         return "Admin not found", 404
 
+
 @app.route('/api/admin/<int:admin_id>/', methods=['PUT'])
 def update_admin(admin_id):
     admin = Admin.query.get(admin_id)
@@ -162,7 +173,7 @@ def update_admin(admin_id):
 
     if admin:
         if not new_email:
-            if admin.isDeleted == True:
+            if admin.isDeleted:
                 admin.isDeleted = False
                 db.session.commit()
                 return "Successfully reactivated a deleted admin"
@@ -179,7 +190,7 @@ def update_admin(admin_id):
 
         admin.email = new_email
 
-        if admin.isDeleted == True:
+        if admin.isDeleted:
             admin.isDeleted = False
             db.session.commit()
             return "Successfully activated an admin and updated the email"
@@ -189,6 +200,7 @@ def update_admin(admin_id):
 
     else:
         return "Admin not found", 404
+
 
 ### Feedback resource ###
 
@@ -207,15 +219,16 @@ def add_feedback():
         email = email.lower()
 
     new_feedback = Feedback(
-        name=feedback.get('name'), 
+        name=feedback.get('name'),
         email=email,
         text=text
-        )
+    )
 
     db.session.add(new_feedback)
     db.session.commit()
 
     return "Successfully submitted feedback", 201
+
 
 @app.route('/api/feedback/<int:feedback_id>/')
 def get_feedback(feedback_id):
@@ -226,6 +239,7 @@ def get_feedback(feedback_id):
     else:
         return jsonify(feedback.serialize())
 
+
 @app.route('/api/feedback/<int:feedback_id>/', methods=['PUT'])
 def update_feedback(feedback_id):
     feedback = Feedback.query.filter_by(id=feedback_id, isDeleted=False).first()
@@ -235,12 +249,12 @@ def update_feedback(feedback_id):
     new_feedback_data = request.get_json()
     if not new_feedback_data:
         return "No data provided", 400
-    
+
     new_email = new_feedback_data.get('email')
     if new_email and not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
         return "Invalid email format", 400
     else:
-        email = email.lower()
+        email = new_email.lower()
 
     feedback.name = new_feedback_data.get('name') \
         if new_feedback_data.get('name') else feedback.name
@@ -255,6 +269,7 @@ def update_feedback(feedback_id):
     except (IntegrityError, SQLAlchemyError):
         db.session.rollback()
         return "Error updating feedback", 501
+
 
 @app.route('/api/feedback/<int:feedback_id>/', methods=['DELETE'])
 def delete_feedback(feedback_id):
@@ -272,6 +287,7 @@ def delete_feedback(feedback_id):
             return "Error deleting feedback", 501
     else:
         return "Feedback not found or already deleted", 404
+
 
 ### Feedback resource only authorized for admin ###
 
@@ -294,8 +310,9 @@ def get_all_feedback():
         'action_date': action.action_date if action else None,
         'action_comment': action.comment if action else None
     } for feedback, action, admin in feedback_list]
-    
+
     return jsonify(feedback_entries)
+
 
 ### Action resource only authorized for admin ###
 
@@ -307,6 +324,7 @@ def get_action(action_id):
         return "Action not found", 404
     else:
         return jsonify(action.serialize())
+
 
 @app.route('/api/admin/action/')
 def get_all_action():
@@ -328,8 +346,9 @@ def get_all_action():
         'feedback_email': feedback.email if feedback else None,
         'feedback_text': feedback.text if feedback else None
     } for action, feedback, admin in action_list]
-    
+
     return jsonify(actions)
+
 
 @app.route('/api/admin/<int:admin_id>/feedback/<int:feedback_id>/', methods=['POST'])
 def add_action(admin_id, feedback_id):
@@ -347,12 +366,13 @@ def add_action(admin_id, feedback_id):
         admin_id=admin_id,
         feedback_id=feedback_id,
         comment=comment
-        )
+    )
 
     db.session.add(new_action)
     db.session.commit()
 
     return "Successfully added a feedback action", 201
+
 
 @app.route('/api/admin/action/<int:action_id>/', methods=['PUT'])
 def update_action(action_id):
@@ -373,6 +393,7 @@ def update_action(action_id):
         db.session.rollback()
         return "Error updating action", 501
 
+
 @app.route('/api/admin/action/<int:action_id>/', methods=['DELETE'])
 def delete_action(action_id):
     action = Action.query.get(action_id)
@@ -387,6 +408,7 @@ def delete_action(action_id):
             return "Error deleting action", 501
     else:
         return "Action not found", 404
+
 
 if __name__ == '__main__':
     with app.app_context():
