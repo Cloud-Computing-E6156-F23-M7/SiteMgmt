@@ -113,7 +113,7 @@ def get_admin(admin_id):
     
     return jsonify(admin.serialize())
 
-@app.route('/api/admin/check_email', methods=['POST'])
+@app.route('/api/admin/check/', methods=['POST'])
 def check_email():
     email = request.json.get('email')
 
