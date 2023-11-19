@@ -113,6 +113,23 @@ def get_admin(admin_id):
     
     return jsonify(admin.serialize())
 
+@app.route('/api/admin/check_email', methods=['POST'])
+def check_email():
+    email = request.json.get('email')
+
+    if email is None:
+        return "Email cannot be null", 400
+
+    email = email.lower()
+    admin = Admin.query.filter(func.lower(Admin.email) == email).first()
+
+    if not admin:
+        return "Email not found", 404
+    if admin.isDeleted == True:
+        return "Admin not activated", 400
+    
+    return jsonify(admin.serialize())
+
 @app.route('/api/admin/', methods=['POST'])
 def add_admin():
     email = request.json.get('email')
