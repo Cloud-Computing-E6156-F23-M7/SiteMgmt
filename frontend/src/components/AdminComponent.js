@@ -13,14 +13,17 @@ const AdminComponent = () => {
         fetchAdmins();
     }, []);
 
+
     useEffect(() => {
-        if (searchId) {
-            const foundAdmin = allAdmins.find(admin => admin.admin_id.toString() === searchId);
-            setAdmins(foundAdmin ? [foundAdmin] : []);
-        } else {
-            setAdmins(allAdmins);
-        }
+    if (searchId) {
+        const foundAdmin = allAdmins.find(admin => admin.admin_id.toString() === searchId);
+        setAdmins(foundAdmin ? [foundAdmin] : []);
+    } else {
+        // Updated to filter out deactivated (deleted) admins
+        setAdmins(allAdmins.filter(admin => !admin.isDeleted));
+    }
     }, [searchId, allAdmins]);
+
 
     const fetchAdmins = async () => {
         try {
