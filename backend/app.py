@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.config.from_object(DbConfig)
 app.json.sort_keys = False
 db = SQLAlchemy(app)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 
 class Admin(db.Model):

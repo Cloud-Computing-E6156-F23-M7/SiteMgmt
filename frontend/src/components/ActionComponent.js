@@ -45,7 +45,7 @@ const ActionComponent = () => {
     const handleAddAction = (event) => {
     event.preventDefault();
     console.log('Attempting to add action:', newAction); // Debugging
-    axios.post(`${process.env.REACT_APP_API_URL}/admin/${newAction.adminId}/feedback/${newAction.feedbackId}`,
+    axios.post(`${process.env.REACT_APP_API_URL}/admin/${newAction.adminId}/feedback/${newAction.feedbackId}/`,
         { comment: newAction.comment })
         .then(response => {
             console.log('Add action response:', response); // Debugging
@@ -57,12 +57,12 @@ const ActionComponent = () => {
             setError('Failed to add action');
             console.log('Failed request details:', error.response); // Additional debugging
         });
-};
+    };
 
 
     const handleUpdateAction = (event) => {
         event.preventDefault();
-        axios.put(`${process.env.REACT_APP_API_URL}/admin/action/${updateAction.actionId}`, { comment: updateAction.comment })
+        axios.put(`${process.env.REACT_APP_API_URL}/admin/action/${updateAction.actionId}/`, { comment: updateAction.comment })
         .then(() => {
             fetchActions(); // Refresh the actions list
             setUpdateAction({ actionId: '', comment: '' }); // Reset the form
@@ -74,7 +74,7 @@ const ActionComponent = () => {
 };
 
     const handleDeleteAction = (actionId) => {
-        axios.delete(`${process.env.REACT_APP_API_URL}/admin/action/${actionId}`)
+        axios.delete(`${process.env.REACT_APP_API_URL}/admin/action/${actionId}/`)
         .then(() => {
             fetchActions(); // Refresh the actions list
         })
