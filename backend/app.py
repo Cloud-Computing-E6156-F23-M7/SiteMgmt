@@ -217,11 +217,12 @@ def add_feedback():
 
     if text is None:
         return "Text cannot be null", 400
-
-    if email and not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return "Invalid email format", 400
-    else:
-        email = email.lower()
+        
+    if email:
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            return "Invalid email format", 400
+        else:
+            email = email.lower()
 
     new_feedback = Feedback(
         name=feedback.get('name'), 
@@ -254,10 +255,11 @@ def update_feedback(feedback_id):
         return "No data provided", 400
     
     new_email = new_feedback_data.get('email')
-    if new_email and not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
-        return "Invalid email format", 400
-    else:
-        email = email.lower()
+    if new_email: 
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
+            return "Invalid email format", 400
+        else:
+            new_email = new_email.lower()
 
     feedback.name = new_feedback_data.get('name') \
         if new_feedback_data.get('name') else feedback.name
