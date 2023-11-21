@@ -1,3 +1,9 @@
+## November 21, 2023
+
+### Backend
+
+* Add publish_to_sns() to delete_admin() ([@kystanleylin](https://github.com/kystanleylin))
+
 ## November 17, 2023
 
 ### Backend
