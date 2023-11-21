@@ -88,9 +88,9 @@ const FeedbackComponent = () => {
                         <p>Text: {feedback.text}</p>
                         <p>Submission Date: {feedback.submission_date}</p>
                         {/*<p>Is Deleted: {feedback.isDeleted ? 'Yes' : 'No'}</p>*/}
-                        {/*<p>Actioned By: {feedback.actioned_by || 'N/A'}</p>*/}
-                        {/*<p>Action Date: {feedback.action_date || 'N/A'}</p>*/}
-                        {/*<p>Action Comment: {feedback.action_comment || 'N/A'}</p>*/}
+                        <p>Actioned By: {feedback.actioned_by || 'N/A'}</p>
+                        <p>Action Date: {feedback.action_date || 'N/A'}</p>
+                        <p>Action Comment: {feedback.action_comment || 'N/A'}</p>
                     </li>
                 ))}
             </ol>
