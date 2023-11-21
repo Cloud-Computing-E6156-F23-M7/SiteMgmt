@@ -11,3 +11,4 @@ packaging==23.2
 Werkzeug==3.0.1
 zipp==3.17.0
 Flask-SQLAlchemy==3.1.1
+boto3==1.29.4

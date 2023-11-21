@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+import boto3
 
 ### Set up the databases ###
 
@@ -76,6 +77,17 @@ class Action(db.Model):
             'action_date': self.action_date
         }    
 
+def publish_to_sns(message: str):
+    topic_arn = 'arn:aws:sns:us-east-2:073127164341:delete_admin'
+    sns = boto3.client('sns', region_name='us-east-2')  
+
+    response = sns.publish(
+        TopicArn=topic_arn,
+        Message=message
+    )
+
+    return response
+
 # NOTE: This route is needed for the default EB health check route
 @app.route('/')  
 def home():
@@ -104,7 +116,7 @@ def get_all_admin():
 
 @app.route('/api/admin/<int:admin_id>/', methods=['GET'])
 def get_admin(admin_id):
-    admin = Admin.query.get(admin_id)
+    admin = db.session.get(Admin, admin_id)
 
     if not admin:
         return "Admin not found", 404
@@ -159,12 +171,13 @@ def add_admin():
 
 @app.route('/api/admin/<int:admin_id>/', methods=['DELETE'])
 def delete_admin(admin_id):
-    admin = Admin.query.get(admin_id)
+    admin = db.session.get(Admin, admin_id)
 
     if admin:
         admin.isDeleted = True
         try:
             db.session.commit()
+            publish_to_sns(f'Admin {admin.email} has been deleted')
             return "Successfully deactivated an admin"
         except (IntegrityError, SQLAlchemyError):
             db.session.rollback()
@@ -174,7 +187,7 @@ def delete_admin(admin_id):
 
 @app.route('/api/admin/<int:admin_id>/', methods=['PUT'])
 def update_admin(admin_id):
-    admin = Admin.query.get(admin_id)
+    admin = db.session.get(Admin, admin_id)
     new_email = request.json.get('email')
 
     if admin:
@@ -320,7 +333,7 @@ def get_all_feedback():
 
 @app.route('/api/admin/action/<int:action_id>/')
 def get_action(action_id):
-    action = Action.query.get(action_id)
+    action = db.session.get(Action, action_id)
 
     if not action:
         return "Action not found", 404
@@ -356,8 +369,8 @@ def add_action(admin_id, feedback_id):
     if not comment:
         return "Comment cannot be null", 400
 
-    admin = Admin.query.get(admin_id)
-    if not (admin and Feedback.query.get(feedback_id)):
+    admin = db.session.get(Admin, admin_id)
+    if not (admin and db.session.get(Feedback, feedback_id)):
         return "admin_id or feedback_id not found", 404
     if admin.isDeleted == True:
         return "admin is deactivated", 400
@@ -375,7 +388,7 @@ def add_action(admin_id, feedback_id):
 
 @app.route('/api/admin/action/<int:action_id>/', methods=['PUT'])
 def update_action(action_id):
-    action = Action.query.get(action_id)
+    action = db.session.get(Action, action_id)
     if not action:
         return "Action not found", 404
 
@@ -394,7 +407,7 @@ def update_action(action_id):
 
 @app.route('/api/admin/action/<int:action_id>/', methods=['DELETE'])
 def delete_action(action_id):
-    action = Action.query.get(action_id)
+    action = db.session.get(Action, action_id)
 
     if action:
         db.session.delete(action)
