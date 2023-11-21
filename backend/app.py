@@ -1,10 +1,10 @@
-import json, os, re
+import json, os, re, boto3
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
 
 ### Set up the databases ###
 
@@ -177,7 +177,10 @@ def delete_admin(admin_id):
         admin.isDeleted = True
         try:
             db.session.commit()
-            publish_to_sns(f'Admin {admin.email} has been deleted')
+            try:
+                publish_to_sns(f'Admin {admin.email} has been deleted')
+            except (NoCredentialsError, ClientError) as e:
+                print(f"An error occurred while publishing to SNS: {e}")
             return "Successfully deactivated an admin"
         except (IntegrityError, SQLAlchemyError):
             db.session.rollback()
