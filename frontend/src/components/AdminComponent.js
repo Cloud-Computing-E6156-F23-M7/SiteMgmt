@@ -41,7 +41,7 @@ const AdminComponent = () => {
         try {
             await axios.post(`${process.env.REACT_APP_API_URL}/admin/`, { email: newAdminEmail });
             setNewAdminEmail('');
-            fetchAdmins(); // Fetch updated list of admins
+            await fetchAdmins(); // Fetch updated list of admins
         } catch (err) {
             setError('Error adding admin');
             console.error('Error:', err);
@@ -100,16 +100,17 @@ const AdminComponent = () => {
 
     return (
         <div>
-            <h2>Admins</h2>
-            {error && <p>{error}</p>}
-            <ul>
-                {admins.map(admin => (
-                    <li key={admin.admin_id}>
+        <h3>Admins</h3>
+        {error && <p>{error}</p>}
+        <ol style={{ listStyleType: "none" }}>
+            {admins.map(admin => (
+                <li key={admin.admin_id} style={{ marginBottom: '10px' }}> {/* Add margin for a gap */}
+                    <div> {/* Add padding for indentation */}
                         {admin.admin_id}. {admin.email} - {admin.isDeleted ? 'Deactivated' : 'Active'}
                         {!admin.isDeleted && (
                             <button onClick={() => deleteAdmin(admin.admin_id)} style={{ marginLeft: '10px' }}>Deactivate</button>
                         )}
-                        <form onSubmit={(event) => handleUpdateSubmit(admin.admin_id, event)}>
+                        <form onSubmit={(event) => handleUpdateSubmit(admin.admin_id, event)} style={{ marginLeft: '15px' }}>
                             <input
                                 type="email"
                                 placeholder="New Email"
@@ -118,25 +119,23 @@ const AdminComponent = () => {
                             />
                             <button type="submit">Update Email</button>
                         </form>
-                    </li>
-                ))}
-            </ul>
+                    </div>
+                </li>
+            ))}
+        </ol>
 
             <h3>Add New/Re-activate Admin</h3>
             <form onSubmit={handleAddSubmit}>
-                <label>
-                    Email:
+                <label> Email: </label>
                     <input type="email" value={newAdminEmail} onChange={handleNewEmailChange} required />
-                </label>
                 <button type="submit">Add/Activate Admin</button>
             </form>
 
             <h3>Search Admin by ID</h3>
             <form onSubmit={(e) => e.preventDefault()}>
-                <label>
-                    Admin ID:
+                <label> Admin ID: </label>
                     <input type="text" value={searchId} onChange={handleSearchIdChange} required />
-                </label>
+
             </form>
         </div>
     );
