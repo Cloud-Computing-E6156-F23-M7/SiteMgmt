@@ -1,3 +1,9 @@
+## December 10, 2023
+
+### Backend
+
+* Add methods for graphql in UserAuthentication service ([@kystanleylin](https://github.com/kystanleylin))
+
 ## November 21, 2023
 
 ### Backend
