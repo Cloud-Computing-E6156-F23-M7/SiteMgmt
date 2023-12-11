@@ -31,7 +31,7 @@ class Admin(db.Model):
 
     def serialize(self):
         return {
-            'admin_id': self.id,
+            'adminId': self.id,
             'email': self.email,
             'isDeleted': self.isDeleted
         }
@@ -49,11 +49,11 @@ class Feedback(db.Model):
 
     def serialize(self):
         return{
-            'feedback_id': self.id,
+            'feedbackId': self.id,
             'name': self.name,
             'email': self.email,
             'text': self.text,
-            'submission_date': self.submission_date,
+            'submissionDate': self.submission_date,
             'isDeleted': self.isDeleted
         }
 
@@ -70,11 +70,11 @@ class Action(db.Model):
 
     def serialize(self):
         return{
-            'action_id': self.id,
-            'admin_id': self.admin_id,
-            'feedback_id': self.feedback_id,
+            'actionId': self.id,
+            'adminId': self.admin_id,
+            'feedbackId': self.feedback_id,
             'comment': self.comment,
-            'action_date': self.action_date
+            'actionDate': self.action_date
         }    
 
 def publish_to_sns(message: str):
@@ -310,6 +310,11 @@ def delete_feedback(feedback_id):
 
 ### Feedback resource only authorized for admin ###
 
+@app.route('/api/admin/feedbackonly/')
+def get_all_feedback_only():
+    feedback_list = Feedback.query.filter_by(isDeleted=False).all()
+    return jsonify([feedback.serialize() for feedback in feedback_list])
+
 @app.route('/api/admin/feedback/')
 def get_all_feedback():
     feedback_list = db.session.query(Feedback, Action, Admin) \
@@ -319,18 +324,29 @@ def get_all_feedback():
         .all()
 
     feedback_entries = [{
-        'feedback_id': feedback.id,
-        'submission_date': feedback.submission_date,
+        'feedbackId': feedback.id,
+        'submissionDate': feedback.submission_date,
         'name': feedback.name,
         'email': feedback.email,
         'text': feedback.text,
         'isDeleted': feedback.isDeleted,
-        'actioned_by': admin.email if admin else None,
-        'action_date': action.action_date if action else None,
-        'action_comment': action.comment if action else None
+        'actionedBy': admin.email if admin else None,
+        'actionDate': action.action_date if action else None,
+        'actionComment': action.comment if action else None
     } for feedback, action, admin in feedback_list]
     
     return jsonify(feedback_entries)
+
+@app.route('/api/admin/feedback/<int:feedback_id>/action/')
+def get_feedback_action(feedback_id):
+    feedback = Feedback.query.filter_by(id=feedback_id, isDeleted=False).first()
+
+    if not feedback:
+        return "Feedback not found or deleted", 404
+
+    action_list = Action.query.filter_by(feedback_id=feedback_id).all()
+
+    return jsonify([action.serialize() for action in action_list])
 
 ### Action resource only authorized for admin ###
 
@@ -343,6 +359,17 @@ def get_action(action_id):
     else:
         return jsonify(action.serialize())
 
+@app.route('/api/admin/<int:admin_id>/action/')
+def get_admin_action(admin_id):
+    admin = Admin.query.filter_by(id=admin_id, isDeleted=False).first()
+
+    if not admin:
+        return "Admin not found or deleted", 404
+
+    action_list = Action.query.filter_by(admin_id=admin_id).all()
+
+    return jsonify([action.serialize() for action in action_list])
+
 @app.route('/api/admin/action/')
 def get_all_action():
     action_list = db.session.query(Action, Feedback, Admin) \
@@ -352,16 +379,16 @@ def get_all_action():
         .all()
 
     actions = [{
-        'action_id': action.id,
-        'admin_id': action.admin_id if admin else None,
+        'actionId': action.id,
+        'adminId': action.admin_id if admin else None,
         'admin': admin.email if admin else None,
-        'action_date': action.action_date,
-        'action_comment': action.comment,
-        'feedback_id': feedback.id if feedback else None,
-        'feedback_submission_date': feedback.submission_date if feedback else None,
-        'feedback_name': feedback.name if feedback else None,
-        'feedback_email': feedback.email if feedback else None,
-        'feedback_text': feedback.text if feedback else None
+        'actionDate': action.action_date,
+        'actionComment': action.comment,
+        'feedbackId': feedback.id if feedback else None,
+        'feedbackSubmissionDate': feedback.submission_date if feedback else None,
+        'feedbackName': feedback.name if feedback else None,
+        'feedbackEmail': feedback.email if feedback else None,
+        'feedbackText': feedback.text if feedback else None
     } for action, feedback, admin in action_list]
     
     return jsonify(actions)
