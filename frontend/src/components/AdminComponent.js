@@ -100,43 +100,18 @@ const AdminComponent = () => {
 
     return (
         <div>
-        <h3>Admins</h3>
+        <h5 class="card-title">Admin controls</h5>
+        <p class="card-text">Add new admins or reactivate admins with admin privileges. Only admins can add other admins. You can also search admins by ID.</p>
+
+        <form onSubmit={handleAddSubmit}>
+            <div class="input-group mb-3">
+                <input type="email" value={newAdminEmail} onChange={handleNewEmailChange} class="form-control" placeholder="User's email" aria-label="Recipient's username" aria-describedby="basic-addon2"></input>
+                <button class="btn btn-outline-secondary" type="submit">Add or Activate</button>
+            </div>
+
+        </form>
         {error && <p>{error}</p>}
-        <ol style={{ listStyleType: "none" }}>
-            {admins.map(admin => (
-                <li key={admin.admin_id} style={{ marginBottom: '10px' }}> {/* Add margin for a gap */}
-                    <div> {/* Add padding for indentation */}
-                        {admin.admin_id}. {admin.email} - {admin.isDeleted ? 'Deactivated' : 'Active'}
-                        {!admin.isDeleted && (
-                            <button onClick={() => deleteAdmin(admin.admin_id)} style={{ marginLeft: '10px' }}>Deactivate</button>
-                        )}
-                        <form onSubmit={(event) => handleUpdateSubmit(admin.admin_id, event)} style={{ marginLeft: '15px' }}>
-                            <input
-                                type="email"
-                                placeholder="New Email"
-                                value={updateEmails[admin.admin_id] || ''}
-                                onChange={(e) => handleUpdateEmailChange(admin.admin_id, e)}
-                            />
-                            <button type="submit">Update Email</button>
-                        </form>
-                    </div>
-                </li>
-            ))}
-        </ol>
 
-            <h3>Add New/Re-activate Admin</h3>
-            <form onSubmit={handleAddSubmit}>
-                <label> Email: </label>
-                    <input type="email" value={newAdminEmail} onChange={handleNewEmailChange} required />
-                <button type="submit">Add/Activate Admin</button>
-            </form>
-
-            <h3>Search Admin by ID</h3>
-            <form onSubmit={(e) => e.preventDefault()}>
-                <label> Admin ID: </label>
-                    <input type="text" value={searchId} onChange={handleSearchIdChange} required />
-
-            </form>
         </div>
     );
 };

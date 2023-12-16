@@ -70,83 +70,50 @@ const FeedbackComponent = () => {
             });
     };
 
-    // Search input change handler
-    const handleSearchInputChange = (event) => {
-        setSearchFeedbackId(event.target.value);
-    };
-
     return (
-    <div className="feedback-section">
-        {/* Feedback List */}
-        <div className="feedback-list">
-            <h3>Feedbacks</h3>
-            <ol className="feedback-items" start={displayedFeedbacks.length > 0 ? displayedFeedbacks[0].feedback_id : 1}>
-                {displayedFeedbacks.map(feedback => (
-                    <li key={feedback.feedback_id} className="feedback-item">
-                        <p>Name: {feedback.name}</p>
-                        <p>Email: {feedback.email}</p>
-                        <p>Text: {feedback.text}</p>
-                        <p>Submission Date: {feedback.submission_date}</p>
-                        {/*<p>Is Deleted: {feedback.isDeleted ? 'Yes' : 'No'}</p>*/}
-                        <p>Actioned By: {feedback.actioned_by || 'N/A'}</p>
-                        <p>Action Date: {feedback.action_date || 'N/A'}</p>
-                        <p>Action Comment: {feedback.action_comment || 'N/A'}</p>
-                    </li>
-                ))}
-            </ol>
-        </div>
+    <div>
+        <h5 class="card-title">Feedback form</h5>
+        <p class="card-text">Add any feedback by typing your text in the form below.</p>
 
-        {/* Feedback Form */}
-        <h3>Add New Feedback</h3>
-            <form onSubmit={handleFeedbackSubmit} className="feedback-form">
-                <div className="feedback-form-group">
-                    <label htmlFor="name" className="feedback-label">Name: </label>
-                    <input
-                        id="name"
-                        type="text"
-                        name="name"
-                        value={newFeedback.name}
-                        onChange={handleInputChange}
-                        className="feedback-input"
-                    />
-                </div>
-                <div className="feedback-form-group">
-                    <p><label htmlFor="email" className="feedback-label">Email: </label>
-                    <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={newFeedback.email}
-                        onChange={handleInputChange}
-                        className="feedback-input"
-                    /></p>
-                </div>
-                <div className="feedback-form-group">
-                    <label htmlFor="text" className="feedback-label">Text: </label>
-                    <textarea
-                        id="text"
-                        name="text"
-                        value={newFeedback.text}
-                        onChange={handleInputChange}
-                        className="feedback-textarea"
-                    />
-                </div>
-                <p></p>
-                <button type="submit" className="feedback-submit-btn">Add Feedback</button>
-                <p></p>
+        <form onSubmit={handleFeedbackSubmit} className="feedback-form">
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    placeholder="John Smith"
+                    id="name"
+                    name="name"
+                    value={newFeedback.name}
+                    onChange={handleInputChange}
+                ></input>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input 
+                    type="email" 
+                    class="form-control" 
+                    placeholder="name@example.com"
+                    id="email"
+                    name="email"
+                    value={newFeedback.email}
+                    onChange={handleInputChange}
+                ></input>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Example textarea</label>
+                <textarea 
+                    class="form-control" 
+                    rows="3"
+                    id="text"
+                    name="text"
+                    value={newFeedback.text}
+                    onChange={handleInputChange}>
+                </textarea>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Add Feedback</button>
         </form>
-
-        {/* Feedback Search */}
-        <h3>Search Feedback by ID</h3>
-        <div className="feedback-search">
-            <label>Feedback ID: </label>
-            <input
-                type="text"
-                value={searchFeedbackId}
-                onChange={handleSearchInputChange}
-                className="feedback-search-input"
-            />
-        </div>
 
         {/* Display form error, if any */}
         {formError && <p className="error-message">{formError}</p>}

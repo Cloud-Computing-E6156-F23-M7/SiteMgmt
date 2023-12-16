@@ -54,4 +54,11 @@
     margin-right: 0;
 }
 
+.navbar img {
+  margin-right: 0.5em;
+}
 
+h1 {
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
