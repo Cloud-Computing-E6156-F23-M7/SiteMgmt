@@ -9,7 +9,7 @@ from botocore.exceptions import NoCredentialsError, ClientError
 ### Set up the databases ###
 
 class DbConfig(object):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///sitemgmt.db'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:weareteamm7@malariastat.czmrkezas6nx.us-east-2.rds.amazonaws.com:3306/SiteMgmt_db'
     SQLALCHEMY_BINDS = {
         'sitemgmt_db': SQLALCHEMY_DATABASE_URI,  # default bind
     }
