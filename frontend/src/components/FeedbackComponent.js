@@ -18,15 +18,15 @@ const FeedbackComponent = () => {
             .catch(error => console.error('Error:', error));
     }, []);
 
-    // Update displayed feedbacks based on search input
-    useEffect(() => {
-        if (searchFeedbackId) {
-            const foundFeedback = feedbacks.filter(feedback => feedback.feedback_id.toString() === searchFeedbackId.trim());
-            setDisplayedFeedbacks(foundFeedback);
-        } else {
-            setDisplayedFeedbacks(feedbacks);
-        }
-    }, [searchFeedbackId, feedbacks]);
+    // // Update displayed feedbacks based on search input
+    // useEffect(() => {
+    //     if (searchFeedbackId) {
+    //         const foundFeedback = feedbacks.filter(feedback => feedback.feedback_id.toString() === searchFeedbackId.trim());
+    //         setDisplayedFeedbacks(foundFeedback);
+    //     } else {
+    //         setDisplayedFeedbacks(feedbacks);
+    //     }
+    // }, [searchFeedbackId, feedbacks]);
 
     const fetchFeedbacks = async () => {
         try {
@@ -58,6 +58,7 @@ const FeedbackComponent = () => {
             .then(response => {
                 if (response.status === 200 || response.status === 201) {
                     setNewFeedback({ name: '', email: '', text: '' }); // Reset form fields
+                    document.getElementById("refresh").click();
                     fetchFeedbacks(); // Fetch all feedbacks again to update the list
                 } else {
                     // Handle non-successful status codes
@@ -101,7 +102,7 @@ const FeedbackComponent = () => {
                 ></input>
             </div>
             <div class="mb-3">
-                <label class="form-label">Example textarea</label>
+                <label class="form-label">Feedback text</label>
                 <textarea 
                     class="form-control" 
                     rows="3"

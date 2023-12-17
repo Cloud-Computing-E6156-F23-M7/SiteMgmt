@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const FeedbackComponent = () => {
+const FeedbackTableComponent = () => {
     const [feedbacks, setFeedbacks] = useState([]); // Store all feedbacks
     const [displayedFeedbacks, setDisplayedFeedbacks] = useState([]); // Store feedbacks to be displayed
     const [searchFeedbackId, setSearchFeedbackId] = useState(''); // Search ID
@@ -42,24 +42,27 @@ const FeedbackComponent = () => {
         }
     };
 
-    // Search input change handler
-    const handleSearchInputChange = (event) => {
-        setSearchFeedbackId(event.target.value);
-    };
+    // // Search input change handler
+    // const handleSearchInputChange = (event) => {
+    //     setSearchFeedbackId(event.target.value);
+    // };
 
     return (
     <div className="feedback-section">
         <div>
-            {/* Feedback Search */}
-            <div class="input-group mb-3">
-                <input type="text" value={searchFeedbackId} onChange={handleSearchInputChange} class="form-control" placeholder="Search feedback by text"></input>
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
-            </div>
+            {/*/!* Feedback Search *!/*/}
+            {/*<div class="input-group mb-3">*/}
+            {/*    <input type="text" value={searchFeedbackId} onChange={handleSearchInputChange} class="form-control" placeholder="Search feedback by text"></input>*/}
+            {/*    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>*/}
+            {/*</div>*/}
+
+            <button id="refresh" style={{display:'none'}} onClick={fetchFeedbacks}>Refresh</button>
 
             {/* Feedback Table */}
             <table class="table">
                 <thead>
                     <tr>
+                        <th scope="col">ID</th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Text</th>
@@ -71,14 +74,15 @@ const FeedbackComponent = () => {
                 </thead>
                 <tbody>
                     {displayedFeedbacks.map(feedback => (
-                    <tr key={feedback.feedback_id}>
+                        <tr key={feedback.actionDate}>
+                        <td>{feedback.feedbackId}</td>
                         <td>{feedback.name}</td>
                         <td>{feedback.email}</td>
                         <td>{feedback.text}</td>
-                        <td>{feedback.submission_date}</td>
-                        <td>{feedback.actioned_by || 'N/A'}</td>
-                        <td>{feedback.action_date || 'N/A'}</td>
-                        <td>{feedback.action_comment || 'N/A'}</td>
+                        <td>{feedback.submissionDate}</td>
+                        <td>{feedback.actionedBy || 'N/A'}</td>
+                        <td>{feedback.actionDate || 'N/A'}</td>
+                        <td>{feedback.actionComment || 'N/A'}</td>
                     </tr>
                     ))}
                 </tbody>
@@ -91,4 +95,4 @@ const FeedbackComponent = () => {
     );
 };
 
-export default FeedbackComponent;
+export default FeedbackTableComponent;

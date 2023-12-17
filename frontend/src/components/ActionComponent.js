@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ActionTableComponent from "./ActionTableComponent";
 
 const ActionComponent = () => {
     const [actions, setActions] = useState([]);
@@ -12,14 +13,14 @@ const ActionComponent = () => {
         fetchActions();
     }, []);
 
-    useEffect(() => {
-        if (searchActionId) {
-            const foundAction = actions.filter(action => action.action_id.toString() === searchActionId);
-            setActions(foundAction);
-        } else {
-            fetchActions();
-        }
-    }, [searchActionId, actions]);
+    // useEffect(() => {
+    //     if (searchActionId) {
+    //         const foundAction = actions.filter(action => action.actionId.toString() === searchActionId);
+    //         setActions(foundAction);
+    //     } else {
+    //         fetchActions();
+    //     }
+    // }, [searchActionId, actions]);
 
     // Function to fetch all actions
     const fetchActions = () => {
@@ -50,6 +51,7 @@ const ActionComponent = () => {
         .then(response => {
             console.log('Add action response:', response); // Debugging
             fetchActions();
+            document.getElementById("refresh").click();
             setNewAction({ adminId: '', feedbackId: '', comment: '' });
         })
         .catch(error => {
@@ -65,6 +67,7 @@ const ActionComponent = () => {
         axios.put(`${process.env.REACT_APP_API_URL}/admin/action/${updateAction.actionId}/`, { comment: updateAction.comment })
         .then(() => {
             fetchActions(); // Refresh the actions list
+            document.getElementById("refresh").click();
             setUpdateAction({ actionId: '', comment: '' }); // Reset the form
         })
         .catch(error => {
@@ -73,88 +76,82 @@ const ActionComponent = () => {
         });
 };
 
-    const handleDeleteAction = (actionId) => {
-        axios.delete(`${process.env.REACT_APP_API_URL}/admin/action/${actionId}/`)
-        .then(() => {
-            fetchActions(); // Refresh the actions list
-        })
-        .catch(error => {
-            console.error('Error deleting action:', error);
-            setError('Failed to delete action');
-        });
-};
+//     const handleDeleteAction = (actionId) => {
+//         axios.delete(`${process.env.REACT_APP_API_URL}/admin/action/${actionId}/`)
+//         .then(() => {
+//             fetchActions(); // Refresh the actions list
+//         })
+//         .catch(error => {
+//             console.error('Error deleting action:', error);
+//             setError('Failed to delete action');
+//         });
+// };
 
-    const handleSearchInputChange = (event) => {
-        setSearchActionId(event.target.value);
-    };
 
     return (
         <div>
-            <h3>Actions</h3>
-            {error && <p className="error">{error}</p>}
+            <h5 class="card-title">Action form</h5>
+            <p class="card-text">Add any action by typing your text in the form below.</p>
 
-            {/* Actions List */}
-            <div className="actions-list">
-                {actions.map(action => (
-                    <div key={action.action_id} className="action-item">
-                        <p>Action ID: {action.action_id}</p>
-                        <p>Admin ID: {action.admin_id}</p>
-                        <p>Feedback ID: {action.feedback_id}</p>
-                        <p>Comment: {action.action_comment}</p>
-                        <p>Action Date: {action.action_date}</p>
-                        <button onClick={() => handleDeleteAction(action.action_id)} className="btn-delete">Delete Action</button>
-                    </div>
-                ))}
-            </div>
-
-            <h3>Add Action</h3>
             {/* Form to Add New Action */}
             <form onSubmit={handleAddAction} className="action-form">
-                <div className="form-group">
-                    <label htmlFor="adminId">Admin ID:</label>
-                    <input type="text" id="adminId" name="adminId" value={newAction.adminId}
-                           onChange={(e) => handleInputChange(e, 'new')} />
+                <div className="mb-3">
+                    <label class="form-label">Admin ID</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        id="adminId"
+                        name="adminId"
+                        value={newAction.adminId}
+                        onChange={(e) => handleInputChange(e, 'new')}></input>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="feedbackId">Feedback ID:</label>
-                    <input type="text" id="feedbackId" name="feedbackId" value={newAction.feedbackId}
-                           onChange={(e) => handleInputChange(e, 'new')} />
+                <div className="mb-3">
+                    <label class="form-label">Feedback ID</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        id="feedbackId"
+                        name="feedbackId"
+                        value={newAction.feedbackId}
+                        onChange={(e) => handleInputChange(e, 'new')}></input>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="comment">Comment:</label>
-                    <textarea id="comment" name="comment" value={newAction.comment}
-                              onChange={(e) => handleInputChange(e, 'new')}></textarea>
+                <div className="mb-3">
+                    <label class="form-label">Comment</label>
+                    <textarea
+                        class="form-control"
+                        rows="3"
+                        id="comment"
+                        name="comment"
+                        value={newAction.comment}
+                        onChange={(e) => handleInputChange(e, 'new')}></textarea>
                 </div>
-                <button type="submit" className="btn-submit">Add Action</button>
+                <button className="btn btn-primary" type="submit">Add Action</button>
             </form>
-
-            <h3>Update Action</h3>
+            <br></br>
+            <h5 className="card-title">Update Action</h5>
             {/* Form to Update an Action */}
             <form onSubmit={handleUpdateAction} className="action-form">
-                <div className="form-group">
-                    <label htmlFor="updateActionId">Action ID:</label>
-                    <input type="text" id="updateActionId" name="actionId" value={updateAction.actionId}
-                           onChange={(e) => handleInputChange(e, 'update')} />
+                <div className="mb-3">
+                    <label class="form-label">Action ID</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        id="updateActionId"
+                        name="actionId"
+                        value={updateAction.actionId}
+                        onChange={(e) => handleInputChange(e, 'update')} />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="updateComment">New Comment:</label>
-                    <textarea id="updateComment" name="comment" value={updateAction.comment}
-                              onChange={(e) => handleInputChange(e, 'update')}></textarea>
+                <div class="mb-3">
+                    <label class="form-label">New Comment</label>
+                    <textarea
+                        id="updateComment"
+                        class="form-control"
+                        name="comment"
+                        value={updateAction.comment}
+                        onChange={(e) => handleInputChange(e, 'update')}></textarea>
                 </div>
-                <button type="submit" className="btn-submit">Update Action</button>
+                <button class="btn btn-primary" type="submit">Update Action</button>
             </form>
-
-            <h3>Search Action by ID</h3>
-            {/* Input for Action ID Search */}
-            <div className="search-action">
-                <label htmlFor="searchActionId">Search Action ID:</label>
-                <input
-                    type="text"
-                    id="searchActionId"
-                    value={searchActionId}
-                    onChange={handleSearchInputChange}
-                />
-            </div>
         </div>
     );
 };

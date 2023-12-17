@@ -12,15 +12,15 @@ const AdminTableComponent = () => {
         fetchAdmins();
     }, []);
 
-    useEffect(() => {
-        if (searchId) {
-            const foundAdmin = allAdmins.find(admin => admin.admin_id.toString() === searchId);
-            setAdmins(foundAdmin ? [foundAdmin] : []);
-        } else {
-            // Updated to filter out deactivated (deleted) admins
-            setAdmins(allAdmins.filter(admin => !admin.isDeleted));
-        }
-        }, [searchId, allAdmins]);
+    // useEffect(() => {
+    //     if (searchId) {
+    //         const foundAdmin = allAdmins.find(admin => admin.adminId.toString() === searchId);
+    //         setAdmins(foundAdmin ? [foundAdmin] : []);
+    //     } else {
+    //         // Updated to filter out deactivated (deleted) admins
+    //         setAdmins(allAdmins.filter(admin => !admin.isDeleted));
+    //     }
+    //     }, [searchId, allAdmins]);
 
     const fetchAdmins = async () => {
         try {
@@ -71,16 +71,19 @@ const AdminTableComponent = () => {
         updateAdminEmail(adminId, updateEmails[adminId]);
     };
 
-    const handleSearchIdChange = (event) => {
-        setSearchId(event.target.value);
-    };
+    // const handleSearchIdChange = (event) => {
+    //     setSearchId(event.target.value);
+    // };
 
     return (
         <div>
-            <div class="input-group mb-3">
-                <input type="text" value={searchId} onChange={handleSearchIdChange} class="form-control" placeholder="Search email by ID"></input>
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
-            </div>
+            {/*<div class="input-group mb-3">*/}
+            {/*    <input type="text" value={searchId} onChange={handleSearchIdChange} class="form-control" placeholder="Search email by ID"></input>*/}
+            {/*    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>*/}
+            {/*</div>*/}
+
+            <button id="refresh" style={{display:'none'}} onClick={fetchAdmins}>Refresh</button>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -92,13 +95,13 @@ const AdminTableComponent = () => {
                 </thead>
                 <tbody>
                     {admins.map(admin => (
-                    <tr key={admin.admin_id}>
-                        <td>{admin.admin_id}</td>
+                    <tr key={admin.adminId}>
+                        <td>{admin.adminId}</td>
                         <td>{admin.email}</td>
                         <td>{admin.isDeleted ? <span class="badge text-bg-danger">Deactivated</span> : <span class="badge text-bg-success">Active</span>} 
                         </td>
                         <td>
-                            <form onSubmit={(event) => handleUpdateSubmit(admin.admin_id, event)}>
+                            <form onSubmit={(event) => handleUpdateSubmit(admin.adminId, event)}>
 
                             <div class="container">
                                 <div class="row">
@@ -107,15 +110,15 @@ const AdminTableComponent = () => {
                                             <input type="email" 
                                             class="form-control" 
                                             placeholder="New email"
-                                            value={updateEmails[admin.admin_id] || ''}
-                                            onChange={(e) => handleUpdateEmailChange(admin.admin_id, e)}></input>
+                                            value={updateEmails[admin.adminId] || ''}
+                                            onChange={(e) => handleUpdateEmailChange(admin.adminId, e)}></input>
 
                                             <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Update</button>
                                         </div>
                                     </div>
                                     <div class="col">
                                         {!admin.isDeleted && (
-                                            <button type="button" class="btn btn-outline-danger" onClick={() => deleteAdmin(admin.admin_id)}>Deactivate</button>
+                                            <button type="button" class="btn btn-outline-danger" onClick={() => deleteAdmin(admin.adminId)}>Deactivate</button>
                                         )}
                                     </div>
                                 </div>

@@ -4,6 +4,7 @@ import AdminTableComponent from './components/AdminTableComponent';
 import FeedbackComponent from './components/FeedbackComponent';
 import FeedbackTableComponent from './components/FeedbackTableComponent';
 import ActionComponent from './components/ActionComponent';
+import ActionTableComponent from "./components/ActionTableComponent";
 import './App.css';
 
 function App() {
@@ -11,6 +12,10 @@ function App() {
   const [isAdminActive, setAdminActive] = useState("true");
   const [isFeedbackActive, setFeedbackActive] = useState("false");
   const [isActionsActive, setActionsActive] = useState("false");
+  const [actions, setActions] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+
 
   const toggleClass = (tab) => {
     if (tab == "admin") {
@@ -39,7 +44,7 @@ function App() {
 
           <ul class="nav nav-pills justify-content-end">
             <li class="nav-item">
-              <a class="nav-link">Map</a>
+              <a class="nav-link" href="">Map</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active">Dashboard</a>
@@ -78,6 +83,7 @@ function App() {
         <div class="card-body">
           {activeComponent === 'admin' && <AdminTableComponent />}
           {activeComponent === 'feedback' && <FeedbackTableComponent />}
+          {activeComponent === 'action' && <ActionTableComponent />}
         </div>
       </div>
 

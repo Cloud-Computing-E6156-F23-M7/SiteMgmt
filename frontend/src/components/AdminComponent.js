@@ -14,15 +14,15 @@ const AdminComponent = () => {
     }, []);
 
 
-    useEffect(() => {
-    if (searchId) {
-        const foundAdmin = allAdmins.find(admin => admin.admin_id.toString() === searchId);
-        setAdmins(foundAdmin ? [foundAdmin] : []);
-    } else {
-        // Updated to filter out deactivated (deleted) admins
-        setAdmins(allAdmins.filter(admin => !admin.isDeleted));
-    }
-    }, [searchId, allAdmins]);
+    // useEffect(() => {
+    // if (searchId) {
+    //     const foundAdmin = allAdmins.find(admin => admin.admin_id.toString() === searchId);
+    //     setAdmins(foundAdmin ? [foundAdmin] : []);
+    // } else {
+    //     // Updated to filter out deactivated (deleted) admins
+    //     setAdmins(allAdmins.filter(admin => !admin.isDeleted));
+    // }
+    // }, [searchId, allAdmins]);
 
 
     const fetchAdmins = async () => {
@@ -41,6 +41,7 @@ const AdminComponent = () => {
         try {
             await axios.post(`${process.env.REACT_APP_API_URL}/admin/`, { email: newAdminEmail });
             setNewAdminEmail('');
+            document.getElementById("refresh").click();
             await fetchAdmins(); // Fetch updated list of admins
         } catch (err) {
             setError('Error adding admin');
